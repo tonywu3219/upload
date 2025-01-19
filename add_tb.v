@@ -32,9 +32,16 @@ integer i;
 integer u; 
 integer error = 0;
 
-function [3:0] dec2bin ;
+function [4:0] dec2bin ;
   input integer  weight ;
   begin
+
+    if (weight>15) begin
+     dec2bin[4] = 1;
+     weight = weight - 16;
+    end
+    else 
+     dec2bin[4] = 0;
 
     if (weight>7) begin
      dec2bin[3] = 1;
@@ -110,9 +117,9 @@ initial begin
 
      #1 clk = 1'b0;
 
-     x_dec = $urandom_range(0,31);
-     y_dec = $urandom_range(0,31);
-     z_dec = $urandom_range(0,63);
+     x_dec = $urandom_range(0,15);
+     y_dec = $urandom_range(0,15);
+     z_dec = $urandom_range(0,31);
 
      x = dec2bin(x_dec); 
      y = dec2bin(y_dec); 
