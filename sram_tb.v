@@ -129,4 +129,34 @@ endmodule
 
 
 
+// After the first write operation to EVEN memory and verification
+$display("########### Simultaneous READ from EVEN and WRITE to ODD ############");
 
+// Reset addresses and set proper write/read enables
+A_EVEN = 0;
+A_ODD = 0;
+WEN_EVEN = 1; // Read mode for EVEN
+WEN_ODD = 0;  // Write mode for ODD
+
+for (t=0; t<run_cycle/2; t=t+1) begin  
+  #20 CLK = 1'b0;
+  
+  // Increment both addresses
+  A_EVEN = A_EVEN + 1;
+  A_ODD = A_ODD + 1;
+  
+  // Read next word from file for ODD memory
+  x_scan_file = $fscanf(x_file,"%32b", D);
+  // Store for verification later
+  D_2D[t+run_cycle/2][31:0] = D;
+  
+  #20 CLK = 1'b1;
+  
+  // On next clock, we can display what was written to ODD and read from EVEN
+  #5;
+  $display("Cycle %2d: Writing %h to ODD[%0d], Reading %h from EVEN[%0d]", 
+           t, D, A_ODD_Q, Q_EVEN, A_EVEN_Q);
+  
+  if (t == run_cycle/2-1)
+    WEN_ODD = 1; // Disable write for ODD when done
+}
